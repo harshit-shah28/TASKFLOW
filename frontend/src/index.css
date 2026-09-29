@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Custom sleek scrollbar for SaaS boards and navigation */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.6);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* ==========================================================================
+   Recharts Chart Visual Polish
+   Removes unwanted focus outlines, black borders, grey cursor strips & SVG seams
+   ========================================================================== */
+.recharts-wrapper,
+.recharts-wrapper *,
+.recharts-surface,
+.recharts-surface *,
+.recharts-responsive-container,
+.recharts-responsive-container * {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.recharts-wrapper:focus,
+.recharts-surface:focus,
+.recharts-surface *:focus,
+.recharts-sector:focus,
+.recharts-rectangle:focus,
+.recharts-pie:focus,
+.recharts-bar:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove unwanted default cursor overlay rectangle on hover */
+.recharts-tooltip-cursor,
+.recharts-rectangle.recharts-tooltip-cursor {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+/* Tooltip container resets to prevent default box borders or outlines */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
