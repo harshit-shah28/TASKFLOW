@@ -65,3 +65,5 @@ yarn-error.log*
 .idea/
 .DS_Store
 Thumbs.db
+docs/mermaid.min.js
+

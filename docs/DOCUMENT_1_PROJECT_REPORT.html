@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document 1 Project Report</title>
+    <style>
+        
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-right {
+        content: counter(page);
+    }
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #1e293b;
+    background-color: #ffffff;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+}
+
+.document-container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #0f172a;
+    border-bottom: 2.5px solid #4f46e5;
+    padding-bottom: 8px;
+    margin-top: 0;
+    margin-bottom: 14px;
+    page-break-after: avoid;
+}
+
+h2 {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1e1b4b;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #312e81;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+}
+
+h4 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+}
+
+p, li {
+    color: #334155;
+    font-size: 10.5pt;
+}
+
+ul, ol {
+    padding-left: 22px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+li {
+    margin-bottom: 4px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #cbd5e1;
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0 20px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+}
+
+td {
+    padding: 7px 10px;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: top;
+}
+
+tr:nth-child(even) td {
+    background-color: #f8fafc;
+}
+
+pre {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5pt;
+    overflow-x: auto;
+    page-break-inside: avoid;
+    line-height: 1.45;
+}
+
+code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9pt;
+    background-color: #f1f5f9;
+    color: #4f46e5;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+pre code {
+    background-color: transparent;
+    color: #e2e8f0;
+    padding: 0;
+    border: none;
+}
+
+blockquote {
+    border-left: 4px solid #6366f1;
+    padding: 8px 14px;
+    margin: 12px 0;
+    background-color: #eef2ff;
+    color: #312e81;
+    border-radius: 0 6px 6px 0;
+    page-break-inside: avoid;
+}
+
+.mermaid {
+    text-align: center;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    page-break-inside: avoid;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.badge-pass { background-color: #dcfce7; color: #15803d; }
+.badge-info { background-color: #e0e7ff; color: #4338ca; }
+
+    </style>
+    <script src="./mermaid.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'neutral',
+                securityLevel: 'loose',
+                flowchart: { useMaxWidth: true, htmlLabels: true },
+                classDiagram: { useMaxWidth: true }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="document-container">
+        <h1 id="taskflow-enterprise-multi-tier-project-management-platform">TASKFLOW: Enterprise Multi-Tier Project Management Platform</h1>
+<h2 id="document-1-complete-technical-design-architectural-project-report">DOCUMENT 1: Complete Technical Design &amp; Architectural Project Report</h2>
+<hr />
+<h3 id="document-control-metadata-editable">📝 Document Control &amp; Metadata (Editable)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Project Title:</strong></td>
+<td style="text-align: left;">TaskFlow — Modern Full-Stack Project Management SaaS</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Document Type:</strong></td>
+<td style="text-align: left;">Complete Architectural &amp; Technical Design Document (HLD &amp; LLD)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Authors / Contributors:</strong></td>
+<td style="text-align: left;">[Your Name / Team Name Here]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Current Version:</strong></td>
+<td style="text-align: left;">Version 2.0 (Production Release)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Associated Git Repository:</strong></td>
+<td style="text-align: left;"><code>https://github.com/harshit-shah28/TASKFLOW</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Release Tags:</strong></td>
+<td style="text-align: left;"><code>v1.0</code> (Core Foundation), <code>v2.0</code> (Enterprise &amp; Admin Suite)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Document Status:</strong></td>
+<td style="text-align: left;">Complete / Approved</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Last Updated:</strong></td>
+<td style="text-align: left;">September 2026</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-executive-summary-problem-definition">1. Executive Summary &amp; Problem Definition</h2>
+<p>Modern project management platforms frequently face a dual architectural challenge:<br />
+1. <strong>Relational Database Overhead:</strong> Traditional relational databases perform well for static CRUD records, but degrade rapidly when processing recursive hierarchical trees (e.g., workspaces, projects, folders, lists, subtasks), prefix autocompletion queries (<code>LIKE '%term%'</code>), deadline priority scheduling, and cycle-deadlock detection in complex dependency networks.<br />
+2. <strong>Real-Time Collaboration Latency:</strong> Distributed teams require instant bi-directional updates for messaging, task movement, status mutations, and event streaming without relying on resource-intensive HTTP polling.</p>
+<p><strong>TASKFLOW</strong> resolves these challenges by coupling a modular <strong>Flask 3.0</strong> backend and <strong>React 19</strong> frontend with <strong>7 custom in-memory Data Structures and Algorithms (DSA)</strong> alongside <strong>Flask-SocketIO</strong> for real-time collaboration. The architecture guarantees sub-millisecond in-memory computations for dependency graphs, trie lookups, priority queues, and organization trees, while preserving relational consistency in <strong>SQLAlchemy / SQLite / PostgreSQL</strong>.</p>
+<hr />
+<h2 id="2-high-level-design-hld">2. High-Level Design (HLD)</h2>
+<h3 id="21-architectural-pattern">2.1 Architectural Pattern</h3>
+<p>TaskFlow follows a <strong>Layered Micro-Modular Architecture</strong> enriched with an <strong>In-Memory Computational Domain Layer</strong> and an <strong>Event-Driven WebSocket Gateway</strong>.</p>
+<div class="mermaid">
+flowchart TD
+    subgraph ClientLayer ["Frontend Client Layer (React 19 + Vite)"]
+        UI_App["Single Page Application (App.jsx)"]
+        UI_Context["Global Contexts (AuthContext, ThemeContext, NotificationContext)"]
+        UI_Pages["Views (Dashboard, Kanban, Calendar, DAG, Chat, Admin)"]
+        UI_Axios["API Service (Axios Client with JWT Interceptors)"]
+        UI_Socket["WebSocket Client (Socket.io-client)"]
+    end
+
+    subgraph GatewayLayer ["Network & Gateway Layer"]
+        ViteProxy["Vite Dev Server Reverse Proxy (:5173/api)"]
+        FlaskRouter["Flask Application Router (:5000)"]
+        CORS["CORS & Request Normalizer"]
+        SocketGateway["Flask-SocketIO Real-time Gateway"]
+    end
+
+    subgraph MiddlewareLayer ["Security & Middleware Layer"]
+        AuthMiddleware["JWT Authentication Guard (@jwt_required_custom)"]
+        RoleGuard["Workspace RBAC Guard (@workspace_role_required)"]
+        AdminGuard["Platform Admin Guard (@admin_required)"]
+        ClerkVerifier["Clerk Public-Key Session Verifier"]
+    end
+
+    subgraph ServiceLayer ["Application & Service Layer"]
+        AuthService["Authentication & SSO Service"]
+        WorkspaceService["Workspace & Member Service"]
+        TaskService["Task Lifecycle & Subtask Engine"]
+        ChatService["Team Chat & File Upload Service"]
+        EmailService["Transactional Email Service (Resend + SMTP)"]
+        AdminService["Platform Governance & Telemetry"]
+    end
+
+    subgraph DSALayer ["Custom In-Memory Algorithmic Core (DSA)"]
+        NAryTree["N-Ary Tree (Multi-level Hierarchy)"]
+        TrieEngine["Trie (Prefix Autocomplete Search)"]
+        HashMapCache["Custom Hash Map (Separate Chaining)"]
+        PriorityHeap["Binary Heap Priority Queue (Deadlines)"]
+        EventQueue["FIFO Thread-Safe Event Queue (Audit/Buffer)"]
+        DAGGraph["DAG Kahn's Topological Sort (Blockers)"]
+        SortingAlgorithms["Custom MergeSort & QuickSort"]
+    end
+
+    subgraph PersistenceLayer ["Persistence & External Storage"]
+        SQLAlchemyORM["SQLAlchemy ORM 2.x"]
+        RelationalDB[("Database: SQLite / PostgreSQL")]
+        FileStorage[("Secure Upload Storage (/uploads/chat)")]
+        ExternalAPIs["External SaaS: Clerk OAuth & Resend API"]
+    end
+
+    UI_App --> UI_Context
+    UI_Context --> UI_Pages
+    UI_Pages --> UI_Axios
+    UI_Pages --> UI_Socket
+
+    UI_Axios --> ViteProxy --> FlaskRouter
+    UI_Socket --> SocketGateway
+
+    FlaskRouter --> CORS --> MiddlewareLayer
+    SocketGateway --> MiddlewareLayer
+
+    MiddlewareLayer --> ServiceLayer
+    ServiceLayer <--> DSALayer
+    ServiceLayer --> SQLAlchemyORM --> RelationalDB
+    ChatService --> FileStorage
+    AuthService --> ExternalAPIs
+    EmailService --> ExternalAPIs
+</div>
+
+<h3 id="22-technology-stack">2.2 Technology Stack</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Layer</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Technology &amp; Version</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Frontend UI</strong></td>
+<td style="text-align: left;">Framework</td>
+<td style="text-align: left;">React 19.0.0</td>
+<td style="text-align: left;">Component rendering, hooks, reactive UI</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Build Tool</strong></td>
+<td style="text-align: left;">Bundler / Server</td>
+<td style="text-align: left;">Vite 8.3.1</td>
+<td style="text-align: left;">Hot Module Replacement, optimized bundling</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Styling</strong></td>
+<td style="text-align: left;">Utility CSS</td>
+<td style="text-align: left;">Tailwind CSS 4.x + Lucide Icons</td>
+<td style="text-align: left;">Responsive UI, dark/light theme</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Backend API</strong></td>
+<td style="text-align: left;">Web Framework</td>
+<td style="text-align: left;">Python 3.10+ / Flask 3.0.0</td>
+<td style="text-align: left;">RESTful API controllers, routing</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Real-time</strong></td>
+<td style="text-align: left;">WebSockets</td>
+<td style="text-align: left;">Flask-SocketIO 5.3.6 / Socket.IO</td>
+<td style="text-align: left;">Bi-directional chat, typing indicators</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ORM / DB</strong></td>
+<td style="text-align: left;">Persistence</td>
+<td style="text-align: left;">SQLAlchemy 2.0 / SQLite / PostgreSQL</td>
+<td style="text-align: left;">Relational modeling, migrations, foreign keys</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Auth</strong></td>
+<td style="text-align: left;">Security</td>
+<td style="text-align: left;">Flask-JWT-Extended + Clerk React SDK</td>
+<td style="text-align: left;">Stateless JWT &amp; Social SSO (Google/GitHub)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Email</strong></td>
+<td style="text-align: left;">Transactional</td>
+<td style="text-align: left;">Resend HTTPS API / SMTP TLS</td>
+<td style="text-align: left;">HTML templates, invite tokens, alerts</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-use-case-modeling">3. Use Case Modeling</h2>
+<h3 id="31-primary-actors">3.1 Primary Actors</h3>
+<ol>
+<li><strong>Platform Administrator:</strong> Global system operator managing user access, tenant workspaces, platform-wide metrics, and audit streams.</li>
+<li><strong>Workspace Owner:</strong> Tenant creator with full governance over billing, workspace settings, role assignments, and project purges.</li>
+<li><strong>Workspace Administrator:</strong> Team manager provisioning projects, folders, task lists, and managing invitations.</li>
+<li><strong>Workspace Member:</strong> Day-to-day team member creating tasks, managing dependencies, posting comments, and chatting in channels.</li>
+<li><strong>Workspace Viewer:</strong> Read-only stakeholder inspecting boards, timeline charts, and project trees.</li>
+<li><strong>External Invitee / Guest:</strong> Prospective user receiving 7-day token invitations via email to join specific workspaces.</li>
+</ol>
+<h3 id="32-use-case-diagram">3.2 Use Case Diagram</h3>
+<div class="mermaid">
+flowchart LR
+    subgraph Actors ["System Actors"]
+        Guest["External Invitee / Guest"]
+        Member["Workspace Member"]
+        Admin["Workspace Admin"]
+        Owner["Workspace Owner"]
+        SuperAdmin["Platform Administrator"]
+    end
+
+    subgraph AuthCases ["Authentication & Onboarding"]
+        UC_Register["Register / Login (JWT)"]
+        UC_GoogleSSO["Google / GitHub OAuth (Clerk)"]
+        UC_AcceptInvite["Accept Workspace Invitation Token"]
+    end
+
+    subgraph CoreCases ["Project & Task Management"]
+        UC_ViewTree["Inspect Hierarchical N-Ary Project Tree"]
+        UC_ManageTasks["Create & Transition Tasks (Kanban / List)"]
+        UC_LinkDependencies["Link Dependencies (DAG Cycle Check)"]
+        UC_TopologicalSort["View Optimal Milestone Execution Sequence"]
+        UC_GlobalSearch["Autocomplete Search (Ctrl+K Trie)"]
+    end
+
+    subgraph CollabCases ["Collaboration & Communications"]
+        UC_RealTimeChat["Team Channel & Direct Messaging"]
+        UC_UploadFiles["Share Image / File Attachments"]
+        UC_TaskComments["Post Comments with @Mentions"]
+        UC_ReceiveAlerts["In-App & Email Notifications"]
+    end
+
+    subgraph AdminCases ["Governance & Administration"]
+        UC_InviteMembers["Invite Members via Email (7-Day Token)"]
+        UC_ManageRoles["Promote / Demote Workspace Roles"]
+        UC_PlatformAdmin["Inspect Global Telemetry & Suspend Users"]
+    end
+
+    Guest --> UC_Register
+    Guest --> UC_GoogleSSO
+    Guest --> UC_AcceptInvite
+
+    Member --> UC_ViewTree
+    Member --> UC_ManageTasks
+    Member --> UC_LinkDependencies
+    Member --> UC_GlobalSearch
+    Member --> UC_RealTimeChat
+    Member --> UC_UploadFiles
+    Member --> UC_TaskComments
+    Member --> UC_ReceiveAlerts
+
+    Admin --> UC_InviteMembers
+    Admin --> UC_TopologicalSort
+    Admin --> UC_ManageTasks
+
+    Owner --> UC_ManageRoles
+    Owner --> UC_InviteMembers
+
+    SuperAdmin --> UC_PlatformAdmin
+</div>
+
+<hr />
+<h2 id="4-low-level-design-lld">4. Low-Level Design (LLD)</h2>
+<h3 id="41-rest-api-specification-matrix">4.1 REST API Specification Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: center;">Method</th>
+<th style="text-align: center;">Role Required</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>/api/auth/register</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Public</td>
+<td style="text-align: left;">Register new user account and auto-resolve pending invitations</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/auth/login</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Public</td>
+<td style="text-align: left;">Authenticate credentials and issue standard 7-day JWT</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/auth/clerk-sync</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Public</td>
+<td style="text-align: left;">Synchronize verified Clerk / Google OAuth token with TaskFlow</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/auth/me</code></td>
+<td style="text-align: center;"><code>GET</code></td>
+<td style="text-align: center;">Authenticated</td>
+<td style="text-align: left;">Retrieve authenticated user profile and accessible workspaces</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/workspaces</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>POST</code></td>
+<td style="text-align: center;">Authenticated</td>
+<td style="text-align: left;">List member workspaces or create new workspace</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/workspaces/:id/invitations</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Admin / Owner</td>
+<td style="text-align: left;">Send 7-day cryptographically secure invitation email</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/workspaces/invitations/:token</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>POST</code></td>
+<td style="text-align: center;">Public / Auth</td>
+<td style="text-align: left;">Inspect invitation validity and accept membership</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/projects</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>POST</code></td>
+<td style="text-align: center;">Authenticated</td>
+<td style="text-align: left;">List workspace projects or create a new project</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/projects/:id/tree</code></td>
+<td style="text-align: center;"><code>GET</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Retrieve complete recursive N-Ary tree representation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/tasks</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>POST</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Query tasks (sorted via MergeSort) or create task</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/tasks/:id/dependencies</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Add prerequisite task dependency with DAG cycle rejection</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/dsa/dependency-analysis</code></td>
+<td style="text-align: center;"><code>GET</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Return Kahn's topological sort sequence and cycle status</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/search</code></td>
+<td style="text-align: center;"><code>GET</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Multi-entity prefix search executed against the Trie engine</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/chat/conversations</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>POST</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">List active channels/DMs or initialize a new conversation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/chat/messages/:id/attachments</code></td>
+<td style="text-align: center;"><code>POST</code></td>
+<td style="text-align: center;">Member+</td>
+<td style="text-align: left;">Upload attachment with MIME validation and size limits</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/admin/users</code></td>
+<td style="text-align: center;"><code>GET</code> / <code>PATCH</code></td>
+<td style="text-align: center;">Platform Admin</td>
+<td style="text-align: left;">List all system accounts or toggle active suspension state</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/api/admin/metrics</code></td>
+<td style="text-align: center;"><code>GET</code></td>
+<td style="text-align: center;">Platform Admin</td>
+<td style="text-align: left;">Aggregated platform throughput, entity counts, storage stats</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="42-real-time-websocket-event-contract">4.2 Real-Time WebSocket Event Contract</h3>
+<p>The application establishes authenticated, duplex WebSockets via <code>flask_socketio</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Event Name</th>
+<th style="text-align: center;">Direction</th>
+<th style="text-align: left;">Payload Schema</th>
+<th style="text-align: left;">Functional Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>join_workspace</code></td>
+<td style="text-align: center;">Client $\rightarrow$ Server</td>
+<td style="text-align: left;"><code>{ workspace_id: int }</code></td>
+<td style="text-align: left;">Subscribes socket to workspace broadcast room</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>join_conversation</code></td>
+<td style="text-align: center;">Client $\rightarrow$ Server</td>
+<td style="text-align: left;"><code>{ conversation_id: int }</code></td>
+<td style="text-align: left;">Joins individual chat room for live message distribution</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>typing_start</code></td>
+<td style="text-align: center;">Client $\rightarrow$ Server</td>
+<td style="text-align: left;"><code>{ conversation_id: int, user_name: str }</code></td>
+<td style="text-align: left;">Broadcasts live typing banner to conversation room</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>typing_stop</code></td>
+<td style="text-align: center;">Client $\rightarrow$ Server</td>
+<td style="text-align: left;"><code>{ conversation_id: int, user_name: str }</code></td>
+<td style="text-align: left;">Clears active typing status indicator</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>new_message</code></td>
+<td style="text-align: center;">Server $\rightarrow$ Client</td>
+<td style="text-align: left;"><code>{ id, content, sender, attachments, created_at }</code></td>
+<td style="text-align: left;">Real-time message append to all open client chat views</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>notification_alert</code></td>
+<td style="text-align: center;">Server $\rightarrow$ Client</td>
+<td style="text-align: left;"><code>{ id, title, message, type, link_url }</code></td>
+<td style="text-align: left;">Fires top-right toast alert and bumps inbox badge</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="43-algorithmic-core-7-custom-in-memory-dsa-engines">4.3 Algorithmic Core: 7 Custom In-Memory DSA Engines</h3>
+<h4 id="1-n-ary-tree-hierarchy-engine-backenddsan_ary_treepy">1. N-Ary Tree Hierarchy Engine (<code>backend/dsa/n_ary_tree.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Arbitrary-degree hierarchical tree with node classes storing references to parent, child dictionary, and entity payload.</li>
+<li><strong>Operations:</strong></li>
+<li><code>add_child(parent_id, node)</code>: $O(1)$ child append.</li>
+<li><code>get_path_to_root(node_id)</code>: $O(d)$ path accumulation for dynamic breadcrumbs.</li>
+<li><code>compute_subtree_metrics(node_id)</code>: Post-order DFS calculating total tasks, completed percentages, and overdue aggregates in $O(N)$ time.</li>
+</ul>
+<h4 id="2-trie-prefix-search-engine-backenddsatriepy">2. Trie Prefix Search Engine (<code>backend/dsa/trie.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> 26+ character branching prefix tree containing terminal payload sets.</li>
+<li><strong>Operations:</strong></li>
+<li>Tokenization: Splits multi-word phrases and tags (<code>#frontend</code>, <code>task-123</code>).</li>
+<li><code>insert(token, entity)</code>: $O(L)$ where $L$ is token character length.</li>
+<li><code>search_prefix(prefix)</code>: Traverses to prefix node in $O(P)$ and executes BFS gathering descendant payloads up to limit $M$ in $O(P + M)$ time.</li>
+</ul>
+<h4 id="3-custom-hash-map-cache-backenddsahash_mappy">3. Custom Hash Map Cache (<code>backend/dsa/hash_map.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Array of linked lists (separate chaining collision resolution) utilizing polynomial rolling hash keys:<br />
+  $$\text{Hash}(S) = \sum_{i=0}^{k-1} S[i] \cdot p^i \pmod m$$</li>
+<li><strong>Operations:</strong></li>
+<li>Automatic resizing when load factor $\lambda = \frac{N}{\text{buckets}} &gt; 0.75$.</li>
+<li>Array capacity doubles ($2B$) and all entries are re-hashed in $O(N)$ amortized time.</li>
+<li><code>get</code>, <code>put</code>, <code>remove</code>: Average $O(1)$, Worst case $O(N)$ under adversarial collision.</li>
+</ul>
+<h4 id="4-priority-queue-deadline-scheduler-backenddsapriority_queuepy">4. Priority Queue Deadline Scheduler (<code>backend/dsa/priority_queue.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Array-backed complete binary heap implementing both Max-Heap (for priority scores) and Min-Heap (for earliest deadline timestamps).</li>
+<li><strong>Operations:</strong></li>
+<li><code>push(item)</code>: Appends to end and bubbles up (sift-up) in $O(\log N)$ time.</li>
+<li><code>pop()</code>: Replaces root with last element and sifts down in $O(\log N)$ time.</li>
+<li><code>peek()</code>: Inspects top priority item in $O(1)$ time.</li>
+</ul>
+<h4 id="5-fifo-event-queue-backenddsaevent_queuepy">5. FIFO Event Queue (<code>backend/dsa/event_queue.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Circular bounded buffer with re-entrant thread locking (<code>threading.Lock</code>).</li>
+<li><strong>Operations:</strong></li>
+<li><code>enqueue(event)</code>: $O(1)$ atomic append with buffer full policy.</li>
+<li><code>dequeue()</code>: $O(1)$ atomic extraction for worker threads processing email dispatch and audit logging.</li>
+</ul>
+<h4 id="6-directed-acyclic-graph-dag-blocker-engine-backenddsadependency_graphpy">6. Directed Acyclic Graph (DAG) Blocker Engine (<code>backend/dsa/dependency_graph.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Adjacency list graph representation storing directed edges $(u, v)$ where $u$ must complete before $v$.</li>
+<li><strong>Algorithms:</strong></li>
+<li><strong>Cycle Detection:</strong> 3-Color Depth First Search (WHITE = unvisited, GRAY = active on recursion stack, BLACK = fully explored). If an edge targets a GRAY node, a cycle deadlock is detected, and the dependency is rejected ($O(V + E)$).</li>
+<li><strong>Kahn's Topological Sort:</strong> Calculates in-degrees for all vertices; pushes vertices with $\text{in-degree} = 0$ into a queue; iteratively removes vertices, appends to sequence, and decrements neighbor in-degrees ($O(V + E)$).</li>
+</ul>
+<h4 id="7-custom-mergesort-quicksort-utilities-backenddsasorting_utilspy">7. Custom MergeSort &amp; QuickSort Utilities (<code>backend/dsa/sorting_utils.py</code>)</h4>
+<ul>
+<li><strong>Structure:</strong> Pure algorithmic implementations independent of standard library wrappers.</li>
+<li><strong>Operations:</strong></li>
+<li><code>mergesort(items, key, reverse)</code>: Stable $O(N \log N)$ sorting preserving relative order for multi-criteria table filtering.</li>
+<li><code>quicksort(items, key)</code>: In-place 3-way partition sorting with randomized pivot selection.</li>
+</ul>
+<hr />
+<h2 id="5-uml-class-diagram">5. UML Class Diagram</h2>
+<div class="mermaid">
+classDiagram
+    class BaseModel {
+        +int id
+        +datetime created_at
+        +datetime updated_at
+        +to_dict() dict
+    }
+
+    class User {
+        +string email
+        +string password_hash
+        +string full_name
+        +string avatar_url
+        +bool is_verified
+        +bool is_platform_admin
+        +string auth_provider
+        +string provider_id
+        +set_password(password)
+        +check_password(password) bool
+        +to_dict() dict
+    }
+
+    class Workspace {
+        +string name
+        +string slug
+        +int owner_id
+        +to_dict() dict
+    }
+
+    class WorkspaceMember {
+        +int workspace_id
+        +int user_id
+        +string role
+    }
+
+    class WorkspaceInvitation {
+        +int workspace_id
+        +string email
+        +string role
+        +string token
+        +string status
+        +datetime expires_at
+        +int invited_by_id
+        +is_valid() bool
+        +create_or_refresh() WorkspaceInvitation
+    }
+
+    class Project {
+        +int workspace_id
+        +string name
+        +string description
+        +string color
+        +string icon
+        +string status
+    }
+
+    class Folder {
+        +int project_id
+        +string name
+        +int parent_id
+    }
+
+    class TaskList {
+        +int project_id
+        +int folder_id
+        +string name
+        +int position
+    }
+
+    class Task {
+        +int project_id
+        +int list_id
+        +int parent_id
+        +string title
+        +string description
+        +string status
+        +string priority
+        +datetime due_date
+        +int position
+    }
+
+    class TaskDependency {
+        +int task_id
+        +int depends_on_task_id
+        +string dependency_type
+    }
+
+    class Comment {
+        +int task_id
+        +int user_id
+        +string content
+    }
+
+    class Conversation {
+        +int workspace_id
+        +string type
+        +string name
+    }
+
+    class Message {
+        +int conversation_id
+        +int sender_id
+        +string content
+    }
+
+    class Attachment {
+        +int message_id
+        +string filename
+        +string file_path
+        +int file_size
+        +string mime_type
+    }
+
+    class Notification {
+        +int user_id
+        +string title
+        +string message
+        +string type
+        +bool is_read
+        +string link_url
+    }
+
+    BaseModel <|-- User
+    BaseModel <|-- Workspace
+    BaseModel <|-- Project
+    BaseModel <|-- Folder
+    BaseModel <|-- TaskList
+    BaseModel <|-- Task
+    BaseModel <|-- Comment
+    BaseModel <|-- Conversation
+    BaseModel <|-- Message
+    BaseModel <|-- Notification
+
+    User "1" -- "many" Workspace : owns
+    Workspace "1" -- "many" WorkspaceMember : contains
+    User "1" -- "many" WorkspaceMember : participates
+    Workspace "1" -- "many" WorkspaceInvitation : issues
+    Workspace "1" -- "many" Project : organizes
+    Project "1" -- "many" Folder : contains
+    Project "1" -- "many" TaskList : groups
+    Folder "1" -- "many" TaskList : structures
+    TaskList "1" -- "many" Task : holds
+    Task "1" -- "many" Task : subtasks
+    Task "1" -- "many" TaskDependency : blocked_by
+    Task "1" -- "many" Comment : discussion
+    Workspace "1" -- "many" Conversation : hosts
+    Conversation "1" -- "many" Message : exchanges
+    Message "1" -- "many" Attachment : includes
+    User "1" -- "many" Notification : receives
+</div>
+
+<hr />
+<h2 id="6-data-flow-diagrams-dfd">6. Data Flow Diagrams (DFD)</h2>
+<h3 id="61-dfd-level-0-context-level-diagram">6.1 DFD Level 0 (Context Level Diagram)</h3>
+<div class="mermaid">
+flowchart TD
+    UserClient["End User / Browser Client"]
+    ClerkAuth["Clerk Identity Provider (OAuth)"]
+    ResendMail["Resend Email API / SMTP"]
+
+    System["TASKFLOW System Core (Port 5000 / 5173)"]
+
+    UserClient -->|"1. User Credentials / Actions / Chat Messages"| System
+    System -->|"2. UI State, Real-Time Socket Feeds, JWTs"| UserClient
+
+    System -->|"3. Social Token Verification"| ClerkAuth
+    ClerkAuth -->|"4. Verified User Identity & Profile"| System
+
+    System -->|"5. Transactional HTML Email Payloads"| ResendMail
+    ResendMail -->|"6. Delivery Receipts & Status Codes"| System
+</div>
+
+<h3 id="62-dfd-level-1-decomposition-diagram">6.2 DFD Level 1 (Decomposition Diagram)</h3>
+<div class="mermaid">
+flowchart TD
+    User["End User"]
+
+    subgraph Processes ["TaskFlow Core Processes"]
+        P1["1.0 Auth & Session Recovery Engine"]
+        P2["2.0 Hierarchy & Organization Engine (N-Ary Tree)"]
+        P3["3.0 Task Execution & DAG Blocker Engine"]
+        P4["4.0 Real-Time Chat & File Upload Engine"]
+        P5["5.0 Prefix Search & Autocomplete Engine (Trie)"]
+        P6["6.0 Platform Governance & Metrics Engine"]
+    end
+
+    subgraph DataStores ["Data Stores"]
+        D1[("D1: Users & Sessions")]
+        D2[("D2: Workspaces & Projects")]
+        D3[("D3: Tasks & DAG Edges")]
+        D4[("D4: Messages & Media Files")]
+        D5[("D5: Audit & Event Logs")]
+    end
+
+    User -->|"Credentials / SSO Callback"| P1
+    P1 <-->|"Read / Write Identity"| D1
+    P1 -->|"Issue JWT Token"| User
+
+    User -->|"Create / Move Projects"| P2
+    P2 <-->|"Traverse / Persist Tree"| D2
+    P2 -->|"Render Tree & Breadcrumbs"| User
+
+    User -->|"Manage Tasks & Deadlines"| P3
+    P3 <-->|"Validate Cycles & Order"| D3
+    P3 -->|"Topological Order & Heap Urgency"| User
+
+    User -->|"Send Messages & Attachments"| P4
+    P4 <-->|"Store Messages & Blobs"| D4
+    P4 -->|"Broadcast Sockets"| User
+
+    User -->|"Search Query (Ctrl+K)"| P5
+    P5 <-->|"Index Tokens"| D2
+    P5 <-->|"Index Tasks"| D3
+    P5 -->|"Autocomplete Results"| User
+
+    User -->|"Admin Inquiries & Bans"| P6
+    P6 <-->|"Telemetry & Security Logs"| D5
+    P6 -->|"Metrics Dashboard"| User
+</div>
+
+<hr />
+<h2 id="7-critical-workflow-flowcharts">7. Critical Workflow Flowcharts</h2>
+<h3 id="71-user-authentication-clerk-session-recovery">7.1 User Authentication &amp; Clerk Session Recovery</h3>
+<div class="mermaid">
+flowchart TD
+    Start(["User opens /login"]) --> CheckClerk{"Is active Clerk session present in browser?"}
+
+    CheckClerk -- Yes --> ShowRecovery["Display 'Already Authenticated' Card (Name & Email)"]
+    ShowRecovery --> UserChoice{"User Action"}
+    UserChoice -- "Click Continue" --> SyncClerk["Call POST /api/auth/clerk-sync"]
+    UserChoice -- "Click Sign Out" --> ClearClerk["Call clerk.signOut() & reset view"]
+
+    CheckClerk -- No --> ShowStandard["Render Standard & Social Login Form"]
+    ShowStandard --> ActionSelect{"Submit Type"}
+
+    ActionSelect -- "Direct Email / Password" --> LocalAuth["POST /api/auth/login"]
+    ActionSelect -- "Use Demo Account" --> AutoFill["Auto-populate Lead Architect Credentials"] --> LocalAuth
+    ActionSelect -- "Click Google" --> TriggerOAuth["clerk.authenticateWithRedirect('oauth_google')"]
+
+    TriggerOAuth --> RedirectGoogle["Redirect to accounts.google.com"]
+    RedirectGoogle --> GoogleReturn["Redirect back to /sso-callback"]
+    GoogleReturn --> SyncClerk
+
+    LocalAuth --> CheckPass{"Credentials Valid?"}
+    CheckPass -- Yes --> IssueToken["Issue 7-Day JWT Token"]
+    CheckPass -- No --> ShowError["Display Error Alert Banner"]
+
+    SyncClerk --> IssueToken
+    IssueToken --> EnterApp(["Redirect to /dashboard"])
+</div>
+
+<h3 id="72-task-dependency-linking-dag-cycle-prevention">7.2 Task Dependency Linking &amp; DAG Cycle Prevention</h3>
+<div class="mermaid">
+flowchart TD
+    LinkReq(["User requests: Task A depends on Task B"]) --> FetchGraph["Construct Project In-Memory Dependency Graph"]
+    FetchGraph --> AddHypotheticalEdge["Temporarily insert directed edge: B -> A"]
+
+    AddHypotheticalEdge --> Run3ColorDFS["Execute 3-Color Cycle Detection (White, Gray, Black)"]
+    Run3ColorDFS --> HasCycle{"Does back-edge target an active GRAY node?"}
+
+    HasCycle -- Yes (Cycle Detected) --> RejectEdge["Revert edge & Return HTTP 400 'Circular dependency detected'"]
+    RejectEdge --> AlertUser(["UI shows error: Task cannot depend on itself or its descendants"])
+
+    HasCycle -- No (Valid DAG) --> SaveEdge["Persist TaskDependency record in database"]
+    SaveEdge --> RunKahns["Execute Kahn's Algorithm on updated DAG"]
+    RunKahns --> ComputeSequence["Compute Recommended Execution Sequence"]
+    ComputeSequence --> ReturnSuccess(["HTTP 201 Created + Updated Topological Sequence"])
+</div>
+    </div>
+</body>
+</html>
