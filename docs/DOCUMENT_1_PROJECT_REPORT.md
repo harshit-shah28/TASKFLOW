@@ -3,6 +3,20 @@
 
 ---
 
+### 📝 Document Control & Metadata (Editable)
+| Field | Value |
+| :--- | :--- |
+| **Project Title:** | TaskFlow — Modern Full-Stack Project Management SaaS |
+| **Document Type:** | Complete Architectural & Technical Design Document (HLD & LLD) |
+| **Authors / Contributors:** | [Your Name / Team Name Here] |
+| **Current Version:** | Version 2.0 (Production Release) |
+| **Associated Git Repository:** | `https://github.com/harshit-shah28/TASKFLOW` |
+| **Release Tags:** | `v1.0` (Core Foundation), `v2.0` (Enterprise & Admin Suite) |
+| **Document Status:** | Complete / Approved |
+| **Last Updated:** | September 2026 |
+
+---
+
 ## 1. Executive Summary & Problem Definition
 
 Modern project management platforms frequently face a dual architectural challenge:

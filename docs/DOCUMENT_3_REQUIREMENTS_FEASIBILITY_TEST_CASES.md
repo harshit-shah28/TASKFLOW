@@ -3,6 +3,20 @@
 
 ---
 
+### 📝 Document Control & Metadata (Editable)
+| Field | Value |
+| :--- | :--- |
+| **Project Title:** | TaskFlow — Modern Full-Stack Project Management SaaS |
+| **Document Type:** | Requirements Specification, Feasibility Study & Test Case Execution Suite |
+| **Authors / Contributors:** | [Your Name / Team Name Here] |
+| **Verified Versions:** | Version 1.0 (`v1.0`) & Version 2.0 (`v2.0`) |
+| **Associated Git Repository:** | `https://github.com/harshit-shah28/TASKFLOW` |
+| **Test Pass Rate:** | 100% (6/6 Test Suites, 29/29 Test Cases Passed) |
+| **Document Status:** | Complete / Production Verified |
+| **Last Updated:** | September 2026 |
+
+---
+
 ## 1. Requirement Gathering & Specifications
 
 ### 1.1 Stakeholder Personas & User Story Mapping
