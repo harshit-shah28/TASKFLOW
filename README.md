@@ -127,8 +127,9 @@ Follow these exact steps to run TaskFlow locally.
 ### Step 1: Clone & Configure Environment
 
 1. Navigate to the project root:
-   ```powershell
-   cd "e:\Project Management"
+   ```bash
+   git clone https://github.com/harshit-shah28/TASKFLOW.git
+   cd TASKFLOW
    ```
 
 2. The development `.env` is already created with safe local defaults. If creating a new one, copy `.env.example`:
@@ -157,7 +158,7 @@ Follow these exact steps to run TaskFlow locally.
 
 1. Open a **second terminal window** and run:
    ```powershell
-   cd "e:\Project Management\frontend"
+   cd frontend
    npm run dev
    ```
 2. You will see:

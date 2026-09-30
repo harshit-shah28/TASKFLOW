@@ -35,6 +35,10 @@ ENV/
 **/ENV/
 backend/venv/
 backend/.venv/
+test_venv/
+scratch/
+uploads/
+instance/
 
 
 # Database
@@ -50,14 +54,11 @@ database/*.db
 *.pem
 *.key
 
-# Logs & Temp
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.log
-uploads/
-instance/
-
 
 # Editor & OS
 .vscode/
