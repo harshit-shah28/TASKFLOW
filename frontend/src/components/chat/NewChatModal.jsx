@@ -174,7 +174,7 @@ export const NewChatModal = ({ isOpen, onClose, activeWorkspace, currentUserId, 
                       className="pt-2 pb-2 first:pt-0 flex items-center justify-between gap-3 px-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer group"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center shrink-0 leading-none select-none text-center">
                           {m.user?.full_name?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div className="min-w-0">

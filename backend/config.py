@@ -10,9 +10,9 @@ ROOT_DIR = BASE_DIR.parent
 # Load environment variables from .env in root or backend
 env_path = ROOT_DIR / '.env'
 if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
+    load_dotenv(dotenv_path=env_path, override=True)
 else:
-    load_dotenv()
+    load_dotenv(override=True)
 
 
 class Config:
@@ -73,14 +73,15 @@ class Config:
         'pdf', 'docx', 'doc', 'txt', 'xlsx', 'xls', 'pptx', 'ppt', 'csv'
     }
     
-    # Email / SMTP
+    # Email / Resend / SMTP
+    RESEND_API_KEY = os.getenv('RESEND_API_KEY', '').strip()
     MAIL_SERVER = os.getenv('MAIL_SERVER', '').strip()
     MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True').lower() in ('true', '1', 't')
     MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False').lower() in ('true', '1', 't')
     MAIL_USERNAME = os.getenv('MAIL_USERNAME', '').strip()
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '').strip()
-    MAIL_FROM = os.getenv('MAIL_FROM', 'TaskFlow <no-reply@taskflow.local>')
+    MAIL_FROM = os.getenv('MAIL_FROM', 'TaskFlow <onboarding@resend.dev>')
     
     # Google OAuth
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '').strip()

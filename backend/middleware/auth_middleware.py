@@ -56,6 +56,26 @@ def jwt_auth_required(fn):
     return wrapper
 
 
+def platform_admin_required(fn):
+    """
+    Decorator ensuring valid JWT token or Clerk session token, active user,
+    and platform administrator privileges (is_platform_admin == True).
+    Workspace roles (Owner, Admin, Member, Viewer) do NOT grant access.
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = get_authenticated_user()
+        if not user:
+            return error_response("Authentication failed: Valid session token required.", 401)
+        if not user.is_active:
+            return error_response("Account is deactivated. Contact support.", 403)
+        if not (getattr(user, 'is_platform_admin', False) and getattr(user, 'email', '') == 'lead_architect@taskflow.dev'):
+            return error_response("Access denied: Platform administrator privileges required.", 403)
+        g.current_user = user
+        return fn(*args, **kwargs)
+    return wrapper
+
+
 def workspace_role_required(minimum_role='Member'):
     """
     Decorator ensuring current user is a member of target workspace

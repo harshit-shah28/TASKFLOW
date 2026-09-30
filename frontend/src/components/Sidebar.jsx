@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 
 export const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, onCloseMobile }) => {
-  const { activeWorkspace } = useAuth();
+  const { activeWorkspace, user } = useAuth();
   const { totalInboxUnread, unreadCount } = useNotifications();
   const displayInboxUnread = totalInboxUnread !== undefined ? totalInboxUnread : unreadCount;
   const location = useLocation();
@@ -298,12 +298,26 @@ export const Sidebar = ({ isCollapsed, onToggleCollapse, isMobileOpen, onCloseMo
             </div>
           </div>
 
-          {/* System Settings */}
+          {/* System Settings & Platform Admin */}
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
             <NavLink to="/settings" onClick={onCloseMobile} className={navLinkClass}>
               <Settings className="w-4 h-4 shrink-0 text-slate-500" />
               {!isCollapsed && <span>Settings</span>}
             </NavLink>
+
+            {Boolean(user?.is_platform_admin && user?.email === 'lead_architect@taskflow.dev') && (
+              <NavLink to="/admin" onClick={onCloseMobile} className={navLinkClass}>
+                <ShieldCheck className="w-4 h-4 shrink-0 text-indigo-500" />
+                {!isCollapsed && (
+                  <div className="flex items-center justify-between w-full">
+                    <span>Platform Admin</span>
+                    <span className="px-1.5 py-0.2 rounded-sm text-[9px] font-bold uppercase bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                      Ops
+                    </span>
+                  </div>
+                )}
+              </NavLink>
+            )}
           </div>
         </div>
 

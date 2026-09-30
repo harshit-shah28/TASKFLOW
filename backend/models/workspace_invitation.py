@@ -74,7 +74,15 @@ class WorkspaceInvitation(db.Model, BaseModel):
 
         return True
 
-    def to_dict(self, base_url: str = 'http://localhost:5173') -> dict:
+    def to_dict(self, base_url: str | None = None) -> dict:
+        if not base_url:
+            try:
+                from flask import current_app
+                base_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
+            except Exception:
+                base_url = 'http://localhost:5173'
+
+        clean_base_url = (base_url or 'http://localhost:5173').rstrip('/')
         return {
             'id': self.id,
             'workspace_id': self.workspace_id,
@@ -86,7 +94,7 @@ class WorkspaceInvitation(db.Model, BaseModel):
             'invited_by_id': self.invited_by_id,
             'inviter_name': self.invited_by.full_name if self.invited_by else None,
             'inviter_email': self.invited_by.email if self.invited_by else None,
-            'invite_url': f"{base_url}/invite/{self.token}",
+            'invite_url': f"{clean_base_url}/invite/{self.token}",
             'expires_at': self.expires_at.isoformat() if self.expires_at else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'accepted_at': self.accepted_at.isoformat() if self.accepted_at else None

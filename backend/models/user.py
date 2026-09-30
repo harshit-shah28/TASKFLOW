@@ -16,6 +16,7 @@ class User(db.Model, BaseModel):
     
     is_verified = db.Column(db.Boolean, default=False, nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    is_platform_admin = db.Column(db.Boolean, default=False, nullable=False)
     theme_preference = db.Column(db.String(20), default='system', nullable=False)
     
     # Auth provider details
@@ -89,6 +90,7 @@ class User(db.Model, BaseModel):
             'bio': self.bio,
             'is_verified': self.is_verified,
             'is_active': self.is_active,
+            'is_platform_admin': bool(self.is_platform_admin and self.email == 'lead_architect@taskflow.dev'),
             'theme_preference': self.theme_preference,
             'auth_provider': self.auth_provider,
             'clerk_user_id': self.clerk_user_id,

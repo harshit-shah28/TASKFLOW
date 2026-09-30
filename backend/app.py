@@ -89,6 +89,7 @@ def create_app(config_class=Config, config_override=None):
     from backend.routes.email_routes import email_bp
     from backend.routes.dsa_routes import dsa_bp
     from backend.routes.chat_routes import chat_bp
+    from backend.routes.admin_routes import admin_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(user_bp, url_prefix='/api/users')
@@ -106,6 +107,7 @@ def create_app(config_class=Config, config_override=None):
     app.register_blueprint(email_bp, url_prefix='/api/email')
     app.register_blueprint(dsa_bp, url_prefix='/api/dsa')
     app.register_blueprint(chat_bp, url_prefix='/api/chat')
+    app.register_blueprint(admin_bp, url_prefix='/api/admin')
 
     # Initialize SocketIO with Flask app
     from backend.sockets import socketio
@@ -117,13 +119,21 @@ def create_app(config_class=Config, config_override=None):
         db_dir = os.path.join(app.root_path, '..', 'database')
         os.makedirs(db_dir, exist_ok=True)
         db.create_all()
+        # Idempotent migration for is_platform_admin column
+        try:
+            from sqlalchemy import text
+            with db.engine.connect() as conn:
+                conn.execute(text("ALTER TABLE users ADD COLUMN is_platform_admin BOOLEAN DEFAULT 0 NOT NULL"))
+                conn.commit()
+        except Exception:
+            pass
         seed_demo_account()
 
     return app
 
 
 def seed_demo_account():
-    """Ensure the standard TaskFlow demo/quickfill account exists in development."""
+    """Ensure standard TaskFlow demo accounts exist with realistic sample data."""
     try:
         from backend.models import User, Workspace, WorkspaceMember
         demo_email = 'lead_architect@taskflow.dev'
@@ -154,6 +164,18 @@ def seed_demo_account():
                 role='Owner'
             ))
             db.session.commit()
+
+        if demo_user and not demo_user.is_platform_admin:
+            demo_user.is_platform_admin = True
+            db.session.commit()
+
+        # Guarantee only lead_architect is platform admin, all others are non-admin
+        User.query.filter(User.email != 'lead_architect@taskflow.dev', User.is_platform_admin == True).update({'is_platform_admin': False}, synchronize_session=False)
+        db.session.commit()
+
+        # Idempotently seed all 5 professional demo accounts with sample data
+        from backend.seeds.seed_demo_accounts import seed_all_demo_accounts
+        seed_all_demo_accounts(verbose=False)
     except Exception as e:
         db.session.rollback()
 

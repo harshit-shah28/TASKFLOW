@@ -187,13 +187,13 @@ export const SettingsPage = () => {
     if (!inviteEmail.trim()) return;
     setInviting(true);
     try {
-      await api.post(`/workspaces/${activeWorkspace.id}/members`, {
+      const res = await api.post(`/workspaces/${activeWorkspace.id}/members`, {
         email: inviteEmail.trim(),
         role: inviteRole,
       });
       const sentEmail = inviteEmail.trim();
       setInviteEmail('');
-      addToast(`Invitation sent to ${sentEmail}`, 'success');
+      addToast(res.message || `Invitation sent to ${sentEmail}`, 'success');
       
       const [membersRes, invRes] = await Promise.all([
         api.get(`/workspaces/${activeWorkspace.id}/members`),
@@ -203,6 +203,10 @@ export const SettingsPage = () => {
       setInvitations(invRes.data || []);
     } catch (err) {
       addToast(err.message || 'Failed to invite member.', 'error');
+      try {
+        const invRes = await api.get(`/workspaces/${activeWorkspace.id}/invitations`);
+        setInvitations(invRes.data || []);
+      } catch (iErr) {}
     } finally {
       setInviting(false);
     }
@@ -219,8 +223,8 @@ export const SettingsPage = () => {
   const handleResendInvite = async (invitationId, recipientEmail) => {
     setResendingId(invitationId);
     try {
-      await api.post(`/workspaces/${activeWorkspace.id}/invitations/${invitationId}/resend`);
-      addToast(`Invitation resent to ${recipientEmail}.`, 'success');
+      const res = await api.post(`/workspaces/${activeWorkspace.id}/invitations/${invitationId}/resend`);
+      addToast(res.message || `Invitation resent to ${recipientEmail}.`, 'success');
       const invRes = await api.get(`/workspaces/${activeWorkspace.id}/invitations`);
       setInvitations(invRes.data || []);
     } catch (err) {
@@ -570,7 +574,7 @@ export const SettingsPage = () => {
                 {members.map((m) => (
                   <div key={m.id} className="p-3.5 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold flex items-center justify-center shrink-0 leading-none select-none text-center">
                         {m.user?.full_name?.charAt(0) || 'U'}
                       </div>
                       <div className="min-w-0">

@@ -150,7 +150,7 @@ def add_or_invite_member(workspace_id):
         expires_in_days=7
     )
     
-    NotificationService.notify_workspace_invite(
+    email_delivered, delivery_msg = NotificationService.notify_workspace_invite(
         workspace=ws,
         inviter=g.current_user,
         recipient_email=email,
@@ -159,13 +159,38 @@ def add_or_invite_member(workspace_id):
         token=invitation.token
     )
     
-    ActivityService.log_activity(
-        workspace_id=ws.id,
-        action='invitation_sent',
-        user_id=g.current_user.id,
-        details={'email': email, 'role': role}
-    )
-    return success_response(invitation.to_dict(), message=f"Invitation sent to {email}.", status_code=201)
+    from backend.services.email_service import EmailService
+    if email_delivered:
+        ActivityService.log_activity(
+            workspace_id=ws.id,
+            action='invitation_sent',
+            user_id=g.current_user.id,
+            details={'email': email, 'role': role, 'email_delivered': True}
+        )
+        return success_response(
+            invitation.to_dict(),
+            message=f"Invitation email successfully sent to {email}.",
+            status_code=201
+        )
+    else:
+        ActivityService.log_activity(
+            workspace_id=ws.id,
+            action='invitation_created_delivery_pending',
+            user_id=g.current_user.id,
+            details={'email': email, 'role': role, 'email_delivered': False, 'status': delivery_msg}
+        )
+        if not EmailService.is_configured():
+            return error_response(
+                message=f"Workspace invitation created for {email}, but real email delivery requires email configuration (RESEND_API_KEY or SMTP credentials) in .env.",
+                status_code=400,
+                errors={'delivery_status': 'unconfigured', 'invitation': invitation.to_dict()}
+            )
+        else:
+            return error_response(
+                message=f"Workspace invitation created for {email}, but email delivery failed: {delivery_msg}",
+                status_code=502,
+                errors={'delivery_status': 'failed', 'invitation': invitation.to_dict()}
+            )
 
 
 @workspace_bp.route('/<int:workspace_id>/invitations', methods=['GET'])
@@ -202,7 +227,7 @@ def resend_invitation(workspace_id, invitation_id):
     )
     
     target_user = User.query.filter_by(email=invitation.email).first()
-    NotificationService.notify_workspace_invite(
+    email_delivered, delivery_msg = NotificationService.notify_workspace_invite(
         workspace=ws,
         inviter=g.current_user,
         recipient_email=invitation.email,
@@ -211,13 +236,31 @@ def resend_invitation(workspace_id, invitation_id):
         token=invitation.token
     )
     
-    ActivityService.log_activity(
-        workspace_id=workspace_id,
-        action='invitation_resent',
-        user_id=g.current_user.id,
-        details={'email': invitation.email, 'role': invitation.role}
-    )
-    return success_response(invitation.to_dict(), message=f"Invitation resent to {invitation.email}.")
+    from backend.services.email_service import EmailService
+    if email_delivered:
+        ActivityService.log_activity(
+            workspace_id=workspace_id,
+            action='invitation_resent',
+            user_id=g.current_user.id,
+            details={'email': invitation.email, 'role': invitation.role, 'email_delivered': True}
+        )
+        return success_response(
+            invitation.to_dict(),
+            message=f"Invitation email successfully resent to {invitation.email}."
+        )
+    else:
+        if not EmailService.is_configured():
+            return error_response(
+                message=f"Invitation refreshed for {invitation.email}, but real email delivery requires email configuration (RESEND_API_KEY or SMTP credentials) in .env.",
+                status_code=400,
+                errors={'delivery_status': 'unconfigured', 'invitation': invitation.to_dict()}
+            )
+        else:
+            return error_response(
+                message=f"Invitation refreshed for {invitation.email}, but email delivery failed: {delivery_msg}",
+                status_code=502,
+                errors={'delivery_status': 'failed', 'invitation': invitation.to_dict()}
+            )
 
 
 @workspace_bp.route('/<int:workspace_id>/invitations/<int:invitation_id>', methods=['DELETE'])
@@ -261,35 +304,40 @@ def accept_invitation(token):
     if not invitation:
         return error_response("Invalid invitation token.", 404)
         
-    if not invitation.is_valid():
-        return error_response("This invitation is invalid, cancelled, or has expired.", 400)
-        
     user = g.current_user
     ws = invitation.workspace
     if not ws:
         return error_response("The associated workspace no longer exists.", 404)
         
     existing = WorkspaceMember.query.filter_by(workspace_id=ws.id, user_id=user.id).first()
-    if not existing:
-        new_member = WorkspaceMember(
-            workspace_id=ws.id,
-            user_id=user.id,
-            role=invitation.role
-        )
-        db.session.add(new_member)
+    if existing:
+        return success_response({
+            'workspace': ws.to_dict(),
+            'role': existing.role
+        }, message=f"You are already a member of {ws.name}.")
+
+    if not invitation.is_valid():
+        return error_response("This invitation is invalid, cancelled, or has expired.", 400)
         
-        try:
-            from backend.routes.chat_routes import ensure_workspace_default_channel
-            ensure_workspace_default_channel(ws.id)
-        except Exception:
-            pass
-            
-        ActivityService.log_activity(
-            workspace_id=ws.id,
-            action='invitation_accepted',
-            user_id=user.id,
-            details={'email': user.email, 'role': invitation.role}
-        )
+    new_member = WorkspaceMember(
+        workspace_id=ws.id,
+        user_id=user.id,
+        role=invitation.role
+    )
+    db.session.add(new_member)
+    
+    try:
+        from backend.routes.chat_routes import ensure_workspace_default_channel
+        ensure_workspace_default_channel(ws.id)
+    except Exception:
+        pass
+        
+    ActivityService.log_activity(
+        workspace_id=ws.id,
+        action='invitation_accepted',
+        user_id=user.id,
+        details={'email': user.email, 'role': invitation.role}
+    )
         
     invitation.status = 'accepted'
     invitation.accepted_at = datetime.now(timezone.utc)

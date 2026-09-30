@@ -26,8 +26,11 @@ def get_email_status():
     failed_emails = EmailLog.query.filter_by(status='failed').count()
     skipped_emails = EmailLog.query.filter_by(status='skipped_unconfigured').count()
 
+    provider = EmailService.get_provider()
+
     return success_response({
         'configured': configured,
+        'provider': provider,
         'smtp_server': server if server else "Not Configured",
         'smtp_port': port,
         'mail_from': mail_from,
@@ -54,14 +57,14 @@ def get_email_logs():
 @email_bp.route('/test', methods=['POST'])
 @jwt_auth_required
 def send_test_email():
-    """Allows testing SMTP settings by sending a diagnostic test email to the user."""
+    """Allows testing email settings by sending a diagnostic test email to the user."""
     user = g.current_user
     data = request.get_json(silent=True) or {}
     recipient = data.get('recipient_email', user.email).strip().lower()
 
     if not EmailService.is_configured():
         return error_response(
-            "SMTP is not configured in .env. Please configure MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, and MAIL_PASSWORD.",
+            "Email delivery is not configured in .env. Please set RESEND_API_KEY (recommended) or SMTP credentials.",
             400,
             errors={'configured': False}
         )

@@ -5,6 +5,10 @@ import { AppLayout } from './layouts/AppLayout';
 
 // Public pages
 import { LandingPage } from './pages/LandingPage';
+import { FeaturesPage } from './pages/FeaturesPage';
+import { SolutionsPage } from './pages/SolutionsPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { PricingPage } from './pages/PricingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
@@ -21,6 +25,7 @@ import { InboxPage } from './pages/InboxPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { DsaArchitecturePage } from './pages/DsaArchitecturePage';
+import { AdminPage } from './pages/AdminPage';
 
 // Protected route guard
 const ProtectedRoute = ({ children }) => {
@@ -54,6 +59,11 @@ export const App = () => {
     <Routes>
       {/* Public Pages */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/features" element={<FeaturesPage />} />
+      <Route path="/solutions" element={<SolutionsPage />} />
+      <Route path="/analytics" element={<AnalyticsPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/sign-in" element={<Navigate to="/login" replace />} />
       <Route
         path="/login"
         element={
@@ -91,6 +101,7 @@ export const App = () => {
         <Route path="/calendar" element={<CalendarPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/dsa" element={<DsaArchitecturePage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Route>
 
       {/* Fallback */}

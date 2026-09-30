@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useOutletContext } from 'react-router-dom';
 import {
   Kanban as KanbanIcon, List as ListIcon, Calendar as CalendarIcon,
-  Plus, Search, Filter, ArrowUpDown, ChevronDown, CheckCircle2,
+  Plus, Search, Filter, ArrowUpDown, ChevronDown, ChevronRight, CheckCircle2,
   AlertTriangle, Clock, Flag, User, Tag, Sparkles, GitCommit,
-  FolderTree, CheckSquare, Layers
+  FolderTree, CheckSquare, Layers, Folder
 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../components/Toast';
@@ -26,6 +26,139 @@ const PRIORITY_BADGES = {
   'High': 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900',
   'Normal': 'bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-900',
   'Low': 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700',
+};
+
+const NODE_TYPE_CONFIG = {
+  project: {
+    icon: Layers,
+    iconColor: 'text-indigo-500',
+    badgeClass: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+    label: 'Project',
+  },
+  folder: {
+    icon: Folder,
+    iconColor: 'text-purple-500',
+    badgeClass: 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+    label: 'Folder',
+  },
+  list: {
+    icon: ListIcon,
+    iconColor: 'text-blue-500',
+    badgeClass: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    label: 'List',
+  },
+  task: {
+    icon: CheckSquare,
+    iconColor: 'text-emerald-500',
+    badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    label: 'Task',
+  },
+  subtask: {
+    icon: CheckCircle2,
+    iconColor: 'text-slate-400',
+    badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700',
+    label: 'Subtask',
+  },
+};
+
+const HierarchyTreeNode = ({ node, level = 0, onOpenTask, tasks = [] }) => {
+  const [expanded, setExpanded] = useState(true);
+  if (!node) return null;
+
+  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+  const config = NODE_TYPE_CONFIG[node.type] || NODE_TYPE_CONFIG.list;
+  const IconComponent = config.icon;
+  const isTask = node.type === 'task';
+
+  const handleClick = () => {
+    if (isTask && onOpenTask) {
+      const numericId = parseInt(String(node.id).replace('task-', ''), 10);
+      const fullTask = tasks.find((t) => t.id === numericId) || {
+        id: numericId,
+        title: node.title,
+        status: node.data?.status || 'To Do',
+        priority: node.data?.priority || 'Normal',
+        due_date: node.data?.due_date,
+      };
+      onOpenTask(fullTask);
+    } else if (hasChildren) {
+      setExpanded((prev) => !prev);
+    }
+  };
+
+  return (
+    <div className="space-y-1">
+      <div
+        onClick={handleClick}
+        className={`flex items-center justify-between p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800/80 bg-white dark:bg-slate-900/90 transition-all ${
+          isTask
+            ? 'cursor-pointer hover:border-indigo-500/50 hover:bg-slate-50/80 dark:hover:bg-slate-800/50'
+            : hasChildren
+            ? 'cursor-pointer hover:bg-slate-50/60 dark:hover:bg-slate-800/40'
+            : ''
+        }`}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          {hasChildren ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded((prev) => !prev);
+              }}
+              className="p-0.5 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+            >
+              {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+          ) : (
+            <span className="w-3.5 h-3.5 shrink-0" />
+          )}
+
+          <IconComponent className={`w-4 h-4 shrink-0 ${config.iconColor}`} />
+
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">
+            {node.title}
+          </span>
+
+          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${config.badgeClass}`}>
+            {config.label}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
+          {node.data?.status && (
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${STATUS_PILL_STYLES[node.data.status] || ''}`}>
+              {node.data.status}
+            </span>
+          )}
+          {node.data?.priority && (
+            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md border ${PRIORITY_BADGES[node.data.priority] || ''}`}>
+              {node.data.priority}
+            </span>
+          )}
+          {hasChildren && (
+            <span className="text-[11px] font-mono text-slate-400">
+              {node.children.length} {node.children.length === 1 ? 'item' : 'items'}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {hasChildren && expanded && (
+        <div className="pl-6 ml-3 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
+          {node.children.map((child) => (
+            <HierarchyTreeNode
+              key={child.id}
+              node={child}
+              level={level + 1}
+              onOpenTask={onOpenTask}
+              tasks={tasks}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const ProjectViewPage = () => {
@@ -340,12 +473,12 @@ export const ProjectViewPage = () => {
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
-                        <div className="flex -space-x-1.5 overflow-hidden">
+                        <div className="flex items-center -space-x-1.5 overflow-hidden">
                           {(t.assignees || []).map((a) => (
                             <span
                               key={a.id}
                               title={a.full_name}
-                              className="inline-block w-6 h-6 rounded-full ring-2 ring-white dark:ring-slate-900 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] flex items-center justify-center"
+                              className="inline-flex items-center justify-center shrink-0 w-6 h-6 rounded-full ring-2 ring-white dark:ring-slate-900 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[10px] leading-none select-none text-center"
                             >
                               {a.full_name?.charAt(0)}
                             </span>
@@ -443,11 +576,11 @@ export const ProjectViewPage = () => {
                             </span>
                           </div>
 
-                          <div className="flex -space-x-1.5">
+                          <div className="flex items-center -space-x-1.5">
                             {(t.assignees || []).map((a) => (
                               <span
                                 key={a.id}
-                                className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[9px] flex items-center justify-center ring-1 ring-white dark:ring-slate-800"
+                                className="inline-flex items-center justify-center shrink-0 w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold text-[9px] leading-none select-none text-center ring-1 ring-white dark:ring-slate-800"
                               >
                                 {a.full_name?.charAt(0)}
                               </span>
@@ -520,11 +653,23 @@ export const ProjectViewPage = () => {
             )}
           </div>
 
-          <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl font-mono text-xs overflow-x-auto">
-            <pre className="text-slate-700 dark:text-slate-300">
-              {JSON.stringify(treeData?.tree || {}, null, 2)}
-            </pre>
-          </div>
+          {!treeData ? (
+            <div className="py-12 text-center text-xs text-slate-400">
+              Loading project hierarchy...
+            </div>
+          ) : !treeData.tree || (Array.isArray(treeData.tree.children) && treeData.tree.children.length === 0 && !treeData.tree.title) ? (
+            <div className="py-12 text-center text-xs text-slate-400 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+              No hierarchy elements found in this project.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <HierarchyTreeNode
+                node={treeData.tree}
+                onOpenTask={onOpenTask}
+                tasks={tasks}
+              />
+            </div>
+          )}
         </div>
       )}
 

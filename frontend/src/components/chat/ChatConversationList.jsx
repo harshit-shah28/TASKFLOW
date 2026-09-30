@@ -131,7 +131,7 @@ export const ChatConversationList = ({
                   >
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <div className="relative shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center leading-none select-none text-center">
                           {c.display_name?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <span

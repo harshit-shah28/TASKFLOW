@@ -217,8 +217,8 @@ class NotificationService:
                 )
 
     @classmethod
-    def notify_workspace_invite(cls, workspace, inviter: User, recipient_email: str, role: str, token: str | None = None, registered_user: User | None = None):
-        """Notify an invited team member with secure invitation link."""
+    def notify_workspace_invite(cls, workspace, inviter: User, recipient_email: str, role: str, token: str | None = None, registered_user: User | None = None) -> tuple[bool, str]:
+        """Notify an invited team member with secure invitation link and return delivery status."""
         app_url = current_app.config.get('FRONTEND_URL', 'http://localhost:5173')
         invite_url = f"{app_url}/invite/{token}" if token else f"{app_url}/dashboard"
         
@@ -237,9 +237,10 @@ class NotificationService:
             recipient_email=recipient_email,
             workspace_name=workspace.name,
             role=role,
-            invite_url=invite_url
+            invite_url=invite_url,
+            expires_in_days=7
         )
-        EmailService.send_html_email(
+        return EmailService.send_html_email(
             recipient_email=recipient_email,
             subject=subject,
             html_content=html,

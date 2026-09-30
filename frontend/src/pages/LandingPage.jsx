@@ -5,6 +5,8 @@ import {
   ShieldCheck, Zap, Sparkles, Users, Mail, BarChart3, Clock, Check
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { PublicNavbar } from '../components/PublicNavbar';
+import { PublicFooter } from '../components/PublicFooter';
 
 export const LandingPage = () => {
   const { user } = useAuth();
@@ -12,48 +14,7 @@ export const LandingPage = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
       {/* Top Navigation */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/logo.svg" alt="TaskFlow" className="w-9 h-9 rounded-xl shadow-lg" />
-            <span className="text-xl font-extrabold tracking-tight">TASKFLOW</span>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-              Enterprise SaaS
-            </span>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-            <a href="#features" className="hover:text-white transition-colors">Features</a>
-            <a href="#analytics" className="hover:text-white transition-colors">Analytics</a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            {user ? (
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
-              >
-                Go to Dashboard <ArrowRight className="w-4 h-4" />
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
-                >
-                  Get Started Free
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
+      <PublicNavbar />
 
       {/* Hero Section */}
       <section className="relative pt-20 pb-24 px-6 overflow-hidden">
@@ -188,9 +149,7 @@ export const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-800 py-8 px-6 text-center text-xs text-slate-500">
-        <p>TASKFLOW &copy; 2026. Modern Project & Team Management Platform. All rights reserved.</p>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };

@@ -70,7 +70,7 @@ export const ChatMessageArea = ({
 
           {isDirect ? (
             <div className="relative">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center leading-none select-none text-center">
                 {otherUser?.full_name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <span
@@ -124,7 +124,7 @@ export const ChatMessageArea = ({
                 className={`flex items-end gap-2.5 ${isMe ? 'justify-end' : 'justify-start'}`}
               >
                 {!isMe && (
-                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center shrink-0 mb-0.5">
+                  <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-[11px] flex items-center justify-center shrink-0 mb-0.5 leading-none select-none text-center">
                     {msg.sender?.full_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}

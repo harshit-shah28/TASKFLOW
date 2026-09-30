@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
-import { useSignIn } from '@clerk/clerk-react';
+import { Mail, Lock, ArrowRight, AlertCircle, Sparkles, LogOut, CheckCircle2 } from 'lucide-react';
+import { useSignIn, useUser, useClerk, useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import api from '../services/api';
 
 const ClerkLoginForm = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded: userLoaded, isSignedIn, user } = useUser();
+  const { signOut } = useClerk();
+  const { getToken } = useClerkAuth();
   const { login, loginWithClerk } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
@@ -17,6 +19,54 @@ const ClerkLoginForm = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(searchParams.get('expired') ? 'Your session expired. Please sign in again.' : '');
   const [loading, setLoading] = useState(false);
+
+  // Auto-sync existing Clerk session to TaskFlow
+  const handleContinueExistingClerkSession = async () => {
+    if (!user) return;
+    setLoading(true);
+    setError('');
+    try {
+      let clerkToken = '';
+      try {
+        clerkToken = await getToken();
+      } catch (tErr) {
+        console.warn('Could not retrieve Clerk token:', tErr);
+      }
+
+      const primaryEmail =
+        user.primaryEmailAddress?.emailAddress ||
+        user.emailAddresses?.[0]?.emailAddress ||
+        '';
+
+      const fullName =
+        user.fullName ||
+        `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+        (primaryEmail ? primaryEmail.split('@')[0] : 'User');
+
+      await loginWithClerk(user.id, primaryEmail, fullName, clerkToken);
+      addToast(`Welcome back, ${fullName}!`, 'success');
+      const redirect = searchParams.get('redirect');
+      navigate(redirect || '/dashboard');
+    } catch (err) {
+      console.error('Failed to sync existing Clerk session:', err);
+      setError(err.message || 'Failed to synchronize your existing Clerk session.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOutClerk = async () => {
+    setLoading(true);
+    try {
+      await signOut();
+      setError('');
+      addToast('Signed out of previous session. You can now sign in.', 'info');
+    } catch (err) {
+      console.error('Error signing out of Clerk:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,18 +115,20 @@ const ClerkLoginForm = () => {
     }
   };
 
-  const handleQuickFill = () => {
-    setEmail('lead_architect@taskflow.dev');
-    setPassword('StrongPassword123!');
-  };
-
   const handleOAuthClick = async (provider) => {
     if (!isLoaded || !signIn) {
       addToast('Authentication service is initializing. Please try again.', 'warning');
       return;
     }
+
     const strategy = provider === 'google' ? 'oauth_google' : provider === 'github' ? 'oauth_github' : null;
     if (!strategy) return;
+
+    // If already signed in to Clerk, continue with that session directly
+    if (isSignedIn && user) {
+      await handleContinueExistingClerkSession();
+      return;
+    }
 
     try {
       await signIn.authenticateWithRedirect({
@@ -86,6 +138,28 @@ const ClerkLoginForm = () => {
       });
     } catch (err) {
       const msg = err.errors?.[0]?.longMessage || err.errors?.[0]?.message || err.message || `Failed to initiate ${provider} sign in.`;
+      
+      // If Clerk reports the user is already signed in
+      if (msg.toLowerCase().includes('already signed in') || err.errors?.[0]?.code === 'session_exists') {
+        if (isSignedIn && user) {
+          await handleContinueExistingClerkSession();
+          return;
+        } else {
+          try {
+            await signOut();
+            await signIn.authenticateWithRedirect({
+              strategy,
+              redirectUrl: '/sso-callback',
+              redirectUrlComplete: '/sso-callback',
+            });
+            return;
+          } catch (retryErr) {
+            setError('You already have an active session. Click "Continue to Dashboard" or "Sign Out" above.');
+            return;
+          }
+        }
+      }
+
       setError(msg);
       addToast(msg, 'error');
     }
@@ -106,21 +180,56 @@ const ClerkLoginForm = () => {
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-8 space-y-6">
+          {/* Active session detected banner */}
+          {userLoaded && isSignedIn && user && (
+            <div className="p-4 rounded-xl bg-indigo-50/90 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shrink-0">
+                  <CheckCircle2 className="w-5 h-5 text-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">
+                    Already Authenticated
+                  </p>
+                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                    {user.fullName || user.primaryEmailAddress?.emailAddress}
+                  </p>
+                  {user.fullName && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      {user.primaryEmailAddress?.emailAddress}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleContinueExistingClerkSession}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 cursor-pointer disabled:opacity-50"
+                >
+                  <span>Continue</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleSignOutClerk}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 cursor-pointer disabled:opacity-50"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
-
-          <button
-            type="button"
-            onClick={handleQuickFill}
-            className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-indigo-500" />
-            <span>Quick Access Sign-In (lead_architect@taskflow.dev)</span>
-          </button>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -170,6 +279,20 @@ const ClerkLoginForm = () => {
             >
               {loading ? 'Authenticating...' : 'Sign In'}
               <ArrowRight className="w-4 h-4" />
+            </button>
+
+            {/* Quick Demo Account autofill */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('lead_architect@taskflow.dev');
+                setPassword('StrongPassword123!');
+                setError('');
+              }}
+              className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 transition-colors cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Use Demo Account (Lead Architect)</span>
             </button>
           </form>
 
@@ -248,11 +371,6 @@ const StandardLoginForm = () => {
     }
   };
 
-  const handleQuickFill = () => {
-    setEmail('lead_architect@taskflow.dev');
-    setPassword('StrongPassword123!');
-  };
-
   const handleOAuthClick = async (provider) => {
     addToast(
       `To use ${provider === 'google' ? 'Google' : 'GitHub'} sign-in, configure Clerk by setting VITE_CLERK_PUBLISHABLE_KEY in .env.`,
@@ -281,15 +399,6 @@ const StandardLoginForm = () => {
               <span>{error}</span>
             </div>
           )}
-
-          <button
-            type="button"
-            onClick={handleQuickFill}
-            className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-800/80 bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-indigo-500" />
-            <span>Quick Access Sign-In (lead_architect@taskflow.dev)</span>
-          </button>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -339,6 +448,20 @@ const StandardLoginForm = () => {
             >
               {loading ? 'Authenticating...' : 'Sign In'}
               <ArrowRight className="w-4 h-4" />
+            </button>
+
+            {/* Quick Demo Account autofill */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('lead_architect@taskflow.dev');
+                setPassword('StrongPassword123!');
+                setError('');
+              }}
+              className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 transition-colors cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Use Demo Account (Lead Architect)</span>
             </button>
           </form>
 

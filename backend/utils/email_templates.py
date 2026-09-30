@@ -161,7 +161,7 @@ def render_verification_email(user_name: str, verify_url: str) -> tuple[str, str
 
 
 def render_password_reset_email(user_name: str, reset_url: str) -> tuple[str, str]:
-    subject = "Reset your TaskFlow password"
+    subject = "Task Flow \u2014 Your password reset code"
     content = f"""
     <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-top: 0;">Password Reset Request</h2>
     <p>Hello {user_name},</p>
@@ -257,7 +257,7 @@ def render_overdue_task_email(user_name: str, task_title: str, project_name: str
     return subject, _get_base_wrapper("Overdue Task", content, "Update Task Status", task_url)
 
 
-def render_workspace_invite_email(inviter_name: str, recipient_email: str, workspace_name: str, role: str, invite_url: str) -> tuple[str, str]:
+def render_workspace_invite_email(inviter_name: str, recipient_email: str, workspace_name: str, role: str, invite_url: str, expires_in_days: int = 7) -> tuple[str, str]:
     subject = f"{inviter_name} invited you to collaborate in '{workspace_name}' on TaskFlow"
     content = f"""
     <h2 style="font-size: 22px; font-weight: 700; color: #0f172a; margin-top: 0;">Workspace Invitation 🤝</h2>
@@ -266,8 +266,12 @@ def render_workspace_invite_email(inviter_name: str, recipient_email: str, works
     <div class="meta-box">
       <div class="meta-item"><span class="meta-label">Workspace:</span> <strong>{workspace_name}</strong></div>
       <div class="meta-item"><span class="meta-label">Your Role:</span> {role}</div>
+      <div class="meta-item"><span class="meta-label">Invited By:</span> {inviter_name}</div>
     </div>
-    <p>Accept the invitation to start collaborating with the team:</p>
+    <p>Click the button below to accept the invitation and start collaborating with your team on projects, tasks, and real-time chat:</p>
+    <p style="font-size: 13px; color: #64748b; margin-top: 16px;">
+      This invitation link will expire in {expires_in_days} days. If you already have a TaskFlow account, please sign in with <strong>{recipient_email}</strong> to join the workspace.
+    </p>
     """
     return subject, _get_base_wrapper("Workspace Invitation", content, "Accept Invitation", invite_url)
 

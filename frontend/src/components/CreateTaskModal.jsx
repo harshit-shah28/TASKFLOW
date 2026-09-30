@@ -233,7 +233,7 @@ export const CreateTaskModal = ({ isOpen, onClose, onTaskCreated, defaultProject
                           : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-400'
                       }`}
                     >
-                      <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-[10px] font-bold flex items-center justify-center">
+                      <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-[10px] font-bold inline-flex items-center justify-center shrink-0 leading-none select-none text-center">
                         {m.user?.full_name?.charAt(0) || 'U'}
                       </span>
                       {m.user?.full_name || 'Member'}
