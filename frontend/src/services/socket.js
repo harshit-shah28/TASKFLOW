@@ -26,7 +26,9 @@ export const initSocket = () => {
     return socket;
   }
 
-  socket = io(window.location.origin, {
+  const backendOrigin = import.meta.env.VITE_BACKEND_URL || window.location.origin;
+
+  socket = io(backendOrigin, {
     path: '/socket.io',
     transports: ['websocket', 'polling'],
     auth: {
